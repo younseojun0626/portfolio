@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>윤서준 | 게시물</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fdf8f3;
+      --text: #3d3a4b;
+      --muted: #6e6a7c;
+      --pink: #ffd6e0;
+      --mint: #c9f2e3;
+      --lavender: #e2d9ff;
+      --peach: #ffe5cc;
+      --sky: #d4ecff;
+      --accent: #b48ce0;
+      --hobby: var(--mint);
+    }
+
+    body[data-hobby="running"] { --hobby: var(--mint); }
+    body[data-hobby="guitar"]  { --hobby: var(--peach); }
+    body[data-hobby="photo"]   { --hobby: var(--lavender); }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Noto Sans KR", sans-serif;
+      font-size: 19px;
+      line-height: 1.8;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* 맨 위: 홈 버튼 + 제목 + 취미 탭 */
+    .top {
+      text-align: center;
+      padding: 28px 20px 56px;
+      background: linear-gradient(170deg, var(--hobby), var(--bg));
+    }
+
+    .top-bar {
+      max-width: 1080px;
+      margin: 0 auto 24px;
+      text-align: left;
+    }
+
+    .back {
+      display: inline-block;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      text-decoration: none;
+      padding: 8px 20px;
+      background: rgba(255, 255, 255, 0.75);
+      border-radius: 999px;
+      transition: transform 0.2s ease;
+    }
+
+    .back:hover {
+      transform: translateX(-3px);
+    }
+
+    .top h1 {
+      font-family: "Gowun Dodum", sans-serif;
+      font-size: 2.6rem;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .top .sub {
+      color: var(--muted);
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .tabs a {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      text-decoration: none;
+      padding: 8px 22px;
+      background: rgba(255, 255, 255, 0.5);
+      border: 2px solid transparent;
+      border-radius: 999px;
+      transition: background 0.2s ease;
+    }
+
+    .tabs a:hover {
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .tabs a[aria-current="page"] {
+      background: #fff;
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 8px 20px 80px;
+    }
+
+    /* 게시물 목록 */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .post {
+      display: block;
+      width: 100%;
+      font: inherit;
+      color: inherit;
+      text-align: left;
+      background: #fff;
+      border: none;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(61, 58, 75, 0.08);
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .post:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 36px rgba(61, 58, 75, 0.14);
+    }
+
+    .post img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      background: var(--hobby);
+    }
+
+    .post-body {
+      padding: 12px 16px 14px;
+    }
+
+    .post-caption {
+      font-size: 0.98rem;
+      line-height: 1.6;
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+
+    .post-date {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .empty {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--muted);
+      border: 2px dashed #e6dff0;
+      border-radius: 28px;
+    }
+
+    /* 크게 보기 */
+    dialog {
+      width: min(92vw, 900px);
+      margin: auto;
+      padding: 0;
+      border: none;
+      border-radius: 24px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    dialog::backdrop {
+      background: rgba(61, 58, 75, 0.6);
+      backdrop-filter: blur(4px);
+    }
+
+    .viewer-inner {
+      padding: 16px;
+    }
+
+    #viewerImg {
+      display: block;
+      width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      background: #f6f2fb;
+      border-radius: 16px;
+    }
+
+    .viewer-info {
+      padding: 14px 6px 6px;
+    }
+
+    #viewerCaption {
+      word-break: break-word;
+    }
+
+    #viewerDate {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .viewer-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding: 8px 6px 4px;
+    }
+
+    .viewer-actions button {
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      padding: 8px 24px;
+      background: var(--lavender);
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    /* 스마트폰 화면 */
+    @media (max-width: 768px) {
+      body {
+        font-size: 18px;
+      }
+
+      .top h1 {
+        font-size: 2rem;
+      }
+
+      main {
+        padding: 8px 16px 64px;
+      }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+      }
+
+      .post-body {
+        padding: 10px 12px 12px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .back, .post { transition: none; }
+    }
+  </style>
+</head>
+<body data-hobby="running">
+
+  <header class="top">
+    <div class="top-bar">
+      <a href="index.html" class="back">← 홈으로</a>
+    </div>
+    <h1><span id="hobbyIcon">🏃</span> <span id="hobbyName">러닝</span> 게시물</h1>
+    <p class="sub" id="hobbyDesc"></p>
+    <nav class="tabs">
+      <a href="posts.html?hobby=running" data-hobby="running">🏃 러닝</a>
+      <a href="posts.html?hobby=guitar" data-hobby="guitar">🎸 기타</a>
+      <a href="posts.html?hobby=photo" data-hobby="photo">📷 사진</a>
+    </nav>
+  </header>
+
+  <main>
+    <div id="grid" class="grid"></div>
+    <p id="empty" class="empty" hidden>아직 올린 게시물이 없어요. 곧 채워질 거예요 📷</p>
+  </main>
+
+  <dialog id="viewer">
+    <div class="viewer-inner">
+      <img id="viewerImg" alt="">
+      <div class="viewer-info">
+        <p id="viewerCaption"></p>
+        <p id="viewerDate"></p>
+      </div>
+      <div class="viewer-actions">
+        <button type="button" id="closeBtn">닫기</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- 게시물 목록은 photos/posts.js 에서 관리해요 -->
+  <script src="photos/posts.js"></script>
+  <script>
+    const HOBBIES = {
+      running: { name: '러닝', icon: '🏃', desc: '달리며 만난 풍경과 기록을 모아요.' },
+      guitar:  { name: '기타', icon: '🎸', desc: '연습한 곡과 기타와 함께한 순간들이에요.' },
+      photo:   { name: '사진', icon: '📷', desc: '스쳐 지나가는 장면을 담았어요.' },
+    };
+
+    // 주소의 ?hobby=... 값으로 어떤 취미 페이지인지 정해요
+    const param = new URLSearchParams(location.search).get('hobby');
+    const hobby = HOBBIES[param] ? param : 'running';
+    const info = HOBBIES[hobby];
+
+    document.body.dataset.hobby = hobby;
+    document.title = `윤서준 | ${info.name} 게시물`;
+    document.getElementById('hobbyIcon').textContent = info.icon;
+    document.getElementById('hobbyName').textContent = info.name;
+    document.getElementById('hobbyDesc').textContent = info.desc;
+    document.querySelectorAll('.tabs a').forEach((a) => {
+      if (a.dataset.hobby === hobby) a.setAttribute('aria-current', 'page');
+    });
+
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('empty');
+    const viewer = document.getElementById('viewer');
+    const viewerImg = document.getElementById('viewerImg');
+    const viewerCaption = document.getElementById('viewerCaption');
+    const viewerDate = document.getElementById('viewerDate');
+
+    function formatDate(date) {
+      const d = new Date(`${date}T00:00:00`);
+      if (isNaN(d)) return date;
+      return d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function openViewer(post) {
+      viewerImg.src = encodeURI(post.file);
+      viewerImg.alt = post.caption || `${info.name} 사진`;
+      viewerCaption.textContent = post.caption || '';
+      viewerCaption.hidden = !post.caption;
+      viewerDate.textContent = post.date ? formatDate(post.date) : '';
+      viewerDate.hidden = !post.date;
+      viewer.showModal();
+    }
+
+    const posts = (typeof POSTS !== 'undefined' && POSTS[hobby]) || [];
+    empty.hidden = posts.length > 0;
+
+    posts.forEach((post) => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'post';
+
+      const img = document.createElement('img');
+      img.src = encodeURI(post.file);
+      img.alt = post.caption || `${info.name} 사진`;
+      img.loading = 'lazy';
+      card.appendChild(img);
+
+      if (post.caption || post.date) {
+        const body = document.createElement('div');
+        body.className = 'post-body';
+        if (post.caption) {
+          const cap = document.createElement('p');
+          cap.className = 'post-caption';
+          cap.textContent = post.caption;
+          body.appendChild(cap);
+        }
+        if (post.date) {
+          const date = document.createElement('p');
+          date.className = 'post-date';
+          date.textContent = formatDate(post.date);
+          body.appendChild(date);
+        }
+        card.appendChild(body);
+      }
+
+      card.addEventListener('click', () => openViewer(post));
+      grid.appendChild(card);
+    });
+
+    document.getElementById('closeBtn').addEventListener('click', () => viewer.close());
+
+    // 사진 바깥 어두운 부분을 눌러도 닫혀요
+    viewer.addEventListener('click', (e) => {
+      if (e.target === viewer) viewer.close();
+    });
+  </script>
+</body>
+</html>
